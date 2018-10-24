@@ -20,7 +20,7 @@
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <!-- This keeps the window background of the activity showing
@@ -39,20 +39,6 @@
         <meta-data android:name="com.google.firebase.messaging.default_notification_color"
                    android:resource="@color/ic_stat_notify_color" />
 
-        <service
-                android:stopWithTask="false"
-                android:name="io.flutter.push.PushPlugin">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-
-        <service
-                android:name="io.flutter.push.FirebaseInstanceIdListenerService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
 
     </application>
 </manifest>

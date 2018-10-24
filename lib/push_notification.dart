@@ -54,7 +54,8 @@ class PushNotification {
   PushNotification({
     this.onMessageReceived,
     this.onTokenRefresh,
-
+    this.onRegister,
+    this.onUnregister,
     this.senderID,
     this.badge,
     this.sound,

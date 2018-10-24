@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_plugin_push_notification/push_notification.dart';
+import 'package:push_notification/push_notification.dart';
 
 void main() => runApp(new MyApp());
 
@@ -13,10 +13,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  PushNotification push = new PushNotification(
-    senderID: "759149683428",
-
-  );
+  PushNotification push;
 
   Future _onMessageReceived(PushResult result){
 
@@ -61,11 +58,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future pusgRegister() async{
-    push.onMessageReceived = _onMessageReceived;
-    push.onTokenRefresh = _onTokenRefresh;
-    push.onRegister= _onRegister;
-    push.onUnregister= _onUnregister;
-    push.register();
+    this.push = new PushNotification(
+        senderID: "759149683428",
+        onMessageReceived: _onMessageReceived,
+        onTokenRefresh: _onTokenRefresh,
+        onRegister: _onRegister,
+        onUnregister: _onUnregister
+    );
+    this.push.register();
   }
 
 

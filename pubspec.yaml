@@ -1,8 +1,11 @@
-name: flutter_plugin_push_notification
+name: push_notification
 description: A new flutter plugin project.
 version: 0.0.1
 author:
 homepage:
+
+environment:
+  sdk: ">=2.0.0-dev.68.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -14,8 +17,8 @@ dependencies:
 # The following section is specific to Flutter.
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.push.flutterpluginpushnotification
-    pluginClass: FlutterPluginPushNotificationPlugin
+    androidPackage: io.flutter.plugins.push
+    pluginClass: PushNotificationPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
