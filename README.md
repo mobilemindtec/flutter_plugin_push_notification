@@ -28,20 +28,6 @@ apply plugin: 'com.google.gms.google-services'
   <meta-data android:name="com.google.firebase.messaging.default_notification_color"
              android:resource="@color/ic_stat_notify_color" />
 
-  <service
-          android:stopWithTask="false"
-          android:name="io.flutter.push.PushPlugin">
-      <intent-filter>
-          <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-      </intent-filter>
-  </service>
-
-  <service
-          android:name="io.flutter.push.FirebaseInstanceIdListenerService">
-      <intent-filter>
-          <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-      </intent-filter>
-  </service>
 ```
 
 ## init on home 
