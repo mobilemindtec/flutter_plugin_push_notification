@@ -24,7 +24,7 @@ class PushResult {
 
   PushResultStatus status;
   String message;
-  String data;
+  Map data;
 
   PushResult({this.status, this.message, this.data});
 }
@@ -44,10 +44,7 @@ class PushNotification {
 
   // Android settings
   String senderID;
-  //iOS settings
-  bool badge; //# Enable setting badge through Push Notification
-  bool sound; // # Enable playing a sound
-  bool alert; // # Enable creating a alert
+
   bool resgiterMessageReceivedListener;
   bool resgiterTokenRefreshListener;
 
@@ -56,20 +53,14 @@ class PushNotification {
     this.onTokenRefresh,
     this.onRegister,
     this.onUnregister,
-    this.senderID,
-    this.badge,
-    this.sound,
-    this.alert}){
+    this.senderID}){
     _channel.setMethodCallHandler(_handleMethod);
   }
 
   void register()  {
     try{
       var data = {
-        "senderID": this.senderID,
-        "badge": this.badge,
-        "sound": this.sound,
-        "alert": this.alert,
+        "senderID": this.senderID
       };
        _channel.invokeMethod('register', data);
 
@@ -113,9 +104,15 @@ class PushNotification {
     }
   }
 
-  Future<Null> _handleMethod(MethodCall call) async {
+  Future setIconBadgeNumber(int number) async {
+    await _channel.invokeMethod('applicationIconBadgeNumber', number);
+  }
 
-    print("_handleMethod = ${call.method}");
+  Future cleanIconBadge() async {
+    await _channel.invokeMethod('applicationCleanIconBadge');
+  }
+
+  Future<Null> _handleMethod(MethodCall call) async {
 
     switch (call.method) {
       case "onMessageReceived":

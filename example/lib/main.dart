@@ -59,7 +59,6 @@ class _MyAppState extends State<MyApp> {
 
   Future pusgRegister() async{
     this.push = new PushNotification(
-        senderID: "759149683428",
         onMessageReceived: _onMessageReceived,
         onTokenRefresh: _onTokenRefresh,
         onRegister: _onRegister,

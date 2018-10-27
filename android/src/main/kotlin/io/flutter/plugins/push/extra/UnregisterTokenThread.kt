@@ -9,7 +9,7 @@ import java.io.IOException
  * Responsible for unregister device from GCM service functionality.
  * By design, this must happen in async way in a Thread.
  */
-class UnregisterTokenThread(private val projectId: String, private val appContext: Context, private val callbacks: PushPluginListener?) : Thread() {
+class UnregisterTokenThread(String, private val appContext: Context, private val callbacks: PushPluginListener?) : Thread() {
 
     override fun run() {
         try {
@@ -24,8 +24,6 @@ class UnregisterTokenThread(private val projectId: String, private val appContex
     private fun deleteTokenFrom() {
         val instanceId = FirebaseInstanceId.getInstance()
         instanceId.deleteInstanceId()
-        //instanceId.deleteToken(this.projectId,
-        //        GoogleCloudMessaging.INSTANCE_ID_SCOPE);
 
         Log.d(TAG, "Token deleted!")
 

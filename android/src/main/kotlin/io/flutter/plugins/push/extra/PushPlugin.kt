@@ -47,13 +47,13 @@ class PushPlugin : FirebaseMessagingService() {
          * @param projectId
          * @param callbacks
          */
-        fun register(appContext: Context, projectId: String, callbacks: PushPluginListener?) {
+        fun register(appContext: Context, callbacks: PushPluginListener?) {
             if (callbacks == null) {
                 Log.d(TAG, "Registering without providing a callback!")
             }
 
             try {
-                val t = ObtainTokenThread(projectId, appContext, callbacks)
+                val t = ObtainTokenThread(appContext, callbacks)
                 t.start()
             } catch (ex: Exception) {
                 callbacks!!.error("Thread failed to start: " + ex.message)
@@ -68,12 +68,12 @@ class PushPlugin : FirebaseMessagingService() {
          * @param projectId
          * @param callbacks
          */
-        fun unregister(appContext: Context, projectId: String, callbacks: PushPluginListener?) {
+        fun unregister(appContext: Context, callbacks: PushPluginListener?) {
             if (callbacks == null) {
                 Log.d(TAG, "Unregister without providing a callback!")
             }
             try {
-                val t = UnregisterTokenThread(projectId, appContext, callbacks)
+                val t = UnregisterTokenThread(appContext, callbacks)
                 t.start()
             } catch (ex: Exception) {
                 callbacks!!.error("Thread failed to start: " + ex.message)
@@ -119,8 +119,8 @@ class PushPlugin : FirebaseMessagingService() {
                     message = remoteMessage.notification!!.body
                     title = remoteMessage.notification!!.title
                 }
-
-                val dataAsJson = JsonObjectExtended()
+                /*
+                val dataAsJson = mutableMapOf<String, String>()
                 val keys = remoteMessage.data.keys
                 for (key in keys) {
                     try {
@@ -131,7 +131,8 @@ class PushPlugin : FirebaseMessagingService() {
                     }
 
                 }
-                _onMessageReceivedCallback!!.success(message, title,  dataAsJson.toString())
+                */
+                _onMessageReceivedCallback!!.success(message, title,  remoteMessage.data)
             } else {
                 Log.d(TAG, "No callback function - caching the data for later retrieval.")
                 cachedData = remoteMessage

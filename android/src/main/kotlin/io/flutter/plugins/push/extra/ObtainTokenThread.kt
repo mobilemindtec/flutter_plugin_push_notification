@@ -9,7 +9,7 @@ import java.io.IOException
  * Responsible for obtaining a Token from the GCM service.
  * By design, this must happen in async way in a Thread.
  */
-class ObtainTokenThread(private val projectId: String, private val appContext: Context, private val callbacks: PushPluginListener?) : Thread() {
+class ObtainTokenThread(String, private val appContext: Context, private val callbacks: PushPluginListener?) : Thread() {
 
     private var token: String? = null
 

@@ -12,17 +12,36 @@ import io.flutter.plugins.push.extra.PushPlugin
 import io.flutter.plugins.push.extra.PushPluginListener
 
 /**
- * FlutterPluginPushNotificationPlugin
+ * PushNotificationPlugin
  */
 class PushNotificationPlugin(private val registrar: Registrar, private val channel: MethodChannel) : MethodCallHandler {
+
+    companion object {
+
+        private val CHANNEL_NAME = "plugins.flutter.io/push_notification_plugin"
+        private val METHOD_REGISTER = "register"
+        private val METHOD_UNREGISTER = "unregister"
+        private val METHOD_MESSAGE_RECEIVED = "onMessageReceived"
+        private val METHOD_TOKEN_REFRESH = "onTokenRefresh"
+        private val METHOD_ARE_NOTIFICATION_ENABLED = "areNotificationsEnabled"
+        private val METHOD_APP_ICON_BADGE_NUMBER = "applicationIconBadgeNumber"
+        private val METHOD_CLEAN_APP_ICON_BADGE = "applicationCleanIconBadge"
+        private val METHOD_NOTIFICATION_CLICK = "notificationClick"
+
+        /**
+         * Plugin registration.
+         */
+        @JvmStatic
+        fun registerWith(registrar: Registrar) {
+            val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
+            channel.setMethodCallHandler(PushNotificationPlugin(registrar, channel))
+        }
+    }
 
     private val activity: Activity = registrar.activity()
     private val application: Application = registrar.context() as Application
 
     private var methodResult: Result? = null
-
-    private var senderID: String? = null
-
 
     init {
 
@@ -32,15 +51,25 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
     override fun onMethodCall(call: MethodCall, result: Result) {
 
         this.methodResult = result
-        if (call.hasArgument("senderID"))
-            this.senderID = call.argument("senderID") as String
 
         when(call.method) {
+
             METHOD_REGISTER -> this.register()
+
             METHOD_UNREGISTER -> this.unregister()
+
             METHOD_MESSAGE_RECEIVED -> this.onMessageReceived()
+
             METHOD_TOKEN_REFRESH -> this.onTokenRefresh()
+
             METHOD_ARE_NOTIFICATION_ENABLED -> this.areNotificationsEnabled()
+
+            METHOD_APP_ICON_BADGE_NUMBER -> result(true)
+
+            METHOD_CLEAN_APP_ICON_BADGE -> result(true)
+
+            METHOD_NOTIFICATION_CLICK -> this.onNotificationClickRegister()
+
             else -> result.notImplemented()
         }
 
@@ -48,11 +77,11 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
 
 
     fun register() {
-        PushPlugin.register(this.application, this.senderID!!, PushPluginListenerImpl(METHOD_REGISTER))
+        PushPlugin.register(this.application, PushPluginListenerImpl(METHOD_REGISTER))
     }
 
     fun unregister() {
-        PushPlugin.unregister(this.application, this.senderID!!, PushPluginListenerImpl(METHOD_UNREGISTER))
+        PushPlugin.unregister(this.application, PushPluginListenerImpl(METHOD_UNREGISTER))
     }
 
     fun onMessageReceived() {
@@ -73,6 +102,10 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
         )
 
         methodResult!!.success(data)
+    }
+
+    fun onNotificationClickRegister() {
+
     }
 
     private inner class PushPluginListenerImpl internal constructor(private val methodName: String) : PushPluginListener {
@@ -116,22 +149,5 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
 
     }
 
-    companion object {
 
-        private val CHANNEL_NAME = "plugins.flutter.io/push_notification_plugin"
-        private val METHOD_REGISTER = "register"
-        private val METHOD_UNREGISTER = "unregister"
-        private val METHOD_MESSAGE_RECEIVED = "onMessageReceived"
-        private val METHOD_TOKEN_REFRESH = "onTokenRefresh"
-        private val METHOD_ARE_NOTIFICATION_ENABLED = "areNotificationsEnabled"
-
-        /**
-         * Plugin registration.
-         */
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
-            channel.setMethodCallHandler(PushNotificationPlugin(registrar, channel))
-        }
-    }
 }
