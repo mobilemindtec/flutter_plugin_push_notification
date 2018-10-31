@@ -9,7 +9,7 @@ import java.io.IOException
  * Responsible for unregister device from GCM service functionality.
  * By design, this must happen in async way in a Thread.
  */
-class UnregisterTokenThread(String, private val appContext: Context, private val callbacks: PushPluginListener?) : Thread() {
+class UnregisterTokenThread(private val appContext: Context, private val callbacks: PushPluginListener?) : Thread() {
 
     override fun run() {
         try {

@@ -64,9 +64,9 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
 
             METHOD_ARE_NOTIFICATION_ENABLED -> this.areNotificationsEnabled()
 
-            METHOD_APP_ICON_BADGE_NUMBER -> result(true)
+            METHOD_APP_ICON_BADGE_NUMBER -> this.methodResult!!.success(null)
 
-            METHOD_CLEAN_APP_ICON_BADGE -> result(true)
+            METHOD_CLEAN_APP_ICON_BADGE -> this.methodResult!!.success(null)
 
             METHOD_NOTIFICATION_CLICK -> this.onNotificationClickRegister()
 

@@ -42,9 +42,6 @@ class PushNotification {
   final MessageHandler onRegister;
   final MessageHandler onUnregister;
 
-  // Android settings
-  String senderID;
-
   bool resgiterMessageReceivedListener;
   bool resgiterTokenRefreshListener;
 
@@ -52,17 +49,13 @@ class PushNotification {
     this.onMessageReceived,
     this.onTokenRefresh,
     this.onRegister,
-    this.onUnregister,
-    this.senderID}){
+    this.onUnregister}){
     _channel.setMethodCallHandler(_handleMethod);
   }
 
   void register()  {
     try{
-      var data = {
-        "senderID": this.senderID
-      };
-       _channel.invokeMethod('register', data);
+       _channel.invokeMethod('register');
 
     }on PlatformException catch (e) {
       throw new PushException(e.message);
