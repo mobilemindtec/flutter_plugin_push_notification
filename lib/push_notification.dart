@@ -24,6 +24,7 @@ class PushResult {
 
   PushResultStatus status;
   String message;
+  String title;
   Map data;
 
   PushResult({this.status, this.message, this.data});
@@ -107,11 +108,13 @@ class PushNotification {
 
   Future<Null> _handleMethod(MethodCall call) async {
 
+    print("method ${call.method}, arguments: ${call.arguments}");
+
     switch (call.method) {
       case "onMessageReceived":
           if(onMessageReceived != null){
             var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
-            var result = new PushResult(status: status, message: call.arguments["message"], data: call.arguments["data"]);
+            var result = new PushResult(status: status, message: call.arguments["message"], title: call.arguments["title"], data: call.arguments["data"]);
             onMessageReceived(result);
           }
         break;

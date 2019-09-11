@@ -120,7 +120,10 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
                     "data" to data
             )
 
-            channel.invokeMethod(methodName, map)
+            this@PushNotificationPlugin.activity.runOnUiThread(java.lang.Runnable {
+                channel.invokeMethod(methodName, map)
+            })
+
 
         }
 
@@ -129,10 +132,12 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
             val map = mutableMapOf(
                     "status" to "success",
                     "message" to message,
-                    "data" to "{}"
+                    "data" to null
             )
 
-            channel.invokeMethod(methodName, map)
+            this@PushNotificationPlugin.activity.runOnUiThread(java.lang.Runnable {
+                channel.invokeMethod(methodName, map)
+            })
 
         }
 
@@ -140,10 +145,13 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
 
             val map = mutableMapOf(
                     "status" to "error",
-                    "message" to data
+                    "message" to data,
+                    "data" to null
             )
 
-            channel.invokeMethod(methodName, map)
+            this@PushNotificationPlugin.activity.runOnUiThread(java.lang.Runnable {
+                channel.invokeMethod(methodName, map)
+            })
 
         }
 

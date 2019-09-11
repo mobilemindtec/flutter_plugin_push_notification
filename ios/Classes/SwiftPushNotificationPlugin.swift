@@ -95,9 +95,9 @@ public class SwiftPushNotificationPlugin: NSObject, FlutterPlugin, UIApplication
         //nsdataStr.description.trimmingCharacters(in: characterSet).replacingOccurrences(of: " ", with: "")
         let token = deviceToken.map { String(format: "%02hhx", $0) }.joined()
         let data = [
-            "data": token,
+            "data": nil,
             "status": "success",
-            "message": nil
+            "message": token
             ]
         
         self.flutterChannel!.invokeMethod(SwiftPushNotificationPlugin.METHOD_REGISTER, arguments: data)

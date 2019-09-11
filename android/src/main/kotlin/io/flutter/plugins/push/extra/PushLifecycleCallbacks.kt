@@ -27,12 +27,12 @@ class PushLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
         PushPlugin.isActive = true
     }
 
-    override fun onActivityCreated(activity: Activity, bundle: Bundle) {}
+    override fun onActivityCreated(activity: Activity, bundle: Bundle?) {}
 
     override fun onActivityDestroyed(activity: Activity) {}
 
     override fun onActivitySaveInstanceState(activity: Activity,
-                                    outState: Bundle) {
+                                    outState: Bundle?) {
     }
 
     override fun onActivityStarted(activity: Activity) {}
