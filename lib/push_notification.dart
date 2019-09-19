@@ -27,7 +27,7 @@ class PushResult {
   String title;
   Map data;
 
-  PushResult({this.status, this.message, this.data});
+  PushResult({this.status, this.message, this.data, this.title});
 }
 
 typedef Future<dynamic> MessageHandler(PushResult result);
