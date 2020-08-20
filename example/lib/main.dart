@@ -55,6 +55,19 @@ class _MyAppState extends State<MyApp> {
 
 
     pusgRegister();
+
+    push.getPushData().then((data){
+      if(data != null){
+        print("push data -----------------------");
+        print(data);
+        print("push data -----------------------");
+      }else{
+        print("not push data");
+      }
+    }).catchError((err){
+      print("get push data error: $err");
+    });
+
   }
 
   Future pusgRegister() async{

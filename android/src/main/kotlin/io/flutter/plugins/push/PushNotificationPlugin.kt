@@ -2,6 +2,7 @@ package io.flutter.plugins.push
 
 import android.app.Activity
 import android.app.Application
+import android.util.Log
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -27,6 +28,7 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
         private val METHOD_APP_ICON_BADGE_NUMBER = "applicationIconBadgeNumber"
         private val METHOD_CLEAN_APP_ICON_BADGE = "applicationCleanIconBadge"
         private val METHOD_NOTIFICATION_CLICK = "notificationClick"
+        private val METHOD_GET_PUSH_DATA = "getPushData"
 
         /**
          * Plugin registration.
@@ -70,6 +72,8 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
 
             METHOD_NOTIFICATION_CLICK -> this.onNotificationClickRegister()
 
+            METHOD_GET_PUSH_DATA -> this.getPushData()
+
             else -> result.notImplemented()
         }
 
@@ -102,6 +106,46 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
         )
 
         methodResult!!.success(data)
+    }
+
+    fun getPushData(){
+
+        //Log.i("FLUTTER_NOTE", "********* intent = ${this.activity.intent}")
+
+        if(this.activity.intent != null && this.activity.intent.extras != null) {
+
+            //Log.i("FLUTTER_NOTE", "********* extras = ${this.activity.intent.extras}")
+
+            val extras = this.activity.intent.extras
+
+            //Log.i("FLUTTER_NOTE", "********* extras appName = ${extras.containsKey("APP_NAME")}")
+
+            var data = mutableMapOf<String, Any>()
+
+            if (extras.containsKey("APP_NAME")) {
+
+                var bundle = extras.getBundle("NOTE_DATA")!!
+                var bundleData = mutableMapOf<String, String>()
+
+                for (key in bundle.keySet()) {
+                    bundleData[key] = bundle.getString(key)
+                }
+
+                data["data"] = bundleData
+            }
+
+            for (key in extras.keySet()) {
+                data["$key"] = "${extras[key]}"
+            }
+
+
+            methodResult!!.success(data)
+
+        }else{
+            methodResult!!.success(null)
+        }
+
+
     }
 
     fun onNotificationClickRegister() {

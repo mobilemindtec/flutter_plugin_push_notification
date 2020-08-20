@@ -13,6 +13,8 @@ public class SwiftPushNotificationPlugin: NSObject, FlutterPlugin, UIApplication
     private static let METHOD_APP_ICON_BADGE_NUMBER = "applicationIconBadgeNumber"
     private static let METHOD_CLEAN_APP_ICON_BADGE = "applicationCleanIconBadge"
     private static let METHOD_NOTIFICATION_CLICK = "notificationClick"
+    private static let METHOD_NOTIFICATION_GET_PUSH_DATA = "getPushData"
+    private static let METHOD_PUSH_APP_OPEN = "onPushAppOpen"
 
     private var flutterResult: FlutterResult?!
     private var flutterChannel: FlutterMethodChannel?!
@@ -26,6 +28,10 @@ public class SwiftPushNotificationPlugin: NSObject, FlutterPlugin, UIApplication
         let instance = SwiftPushNotificationPlugin(channel: channel)
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
+        
+        
+        let center = UNUserNotificationCenter.current()
+        center.delegate = instance
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -36,12 +42,19 @@ public class SwiftPushNotificationPlugin: NSObject, FlutterPlugin, UIApplication
             
             case SwiftPushNotificationPlugin.METHOD_REGISTER:
                 
-                let center = UNUserNotificationCenter.current()
-                center.requestAuthorization(options: [.alert, .sound], completionHandler: {
+                var center: UNUserNotificationCenter?
+                
+                
+                center = UNUserNotificationCenter.current()
+                
+                
+                center!.requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {
                     (granted, error) in
                     
                     if granted {
-                        UIApplication.shared.registerForRemoteNotifications()
+                        DispatchQueue.main.async {
+                            UIApplication.shared.registerForRemoteNotifications()
+                        }
                         //result(["status": "success", "message": nil, "data": nil])
                     }else{
                         let data = ["status": "error", "message": error?.localizedDescription, "data": nil]
@@ -69,13 +82,18 @@ public class SwiftPushNotificationPlugin: NSObject, FlutterPlugin, UIApplication
             case SwiftPushNotificationPlugin.METHOD_APP_ICON_BADGE_NUMBER:
                 let iconBadgeNumber = call.arguments as! Int
                 UIApplication.shared.applicationIconBadgeNumber = iconBadgeNumber
-                result(result(["status": "success", "message": nil, "data": nil]))
+                
+                result(["status": "success", "message": nil, "data": nil])
                 break
             case SwiftPushNotificationPlugin.METHOD_CLEAN_APP_ICON_BADGE:
-                UIApplication.shared.applicationIconBadgeNumber = 0
-                result(result(["status": "success", "message": nil, "data": nil]))
+                //UIApplication.shared.applicationIconBadgeNumber = 0
+                self.clearNotifications()
+                result(["status": "success", "message": nil, "data": nil])
                 break
             case SwiftPushNotificationPlugin.METHOD_NOTIFICATION_CLICK:
+                break
+            case SwiftPushNotificationPlugin.METHOD_NOTIFICATION_GET_PUSH_DATA:
+                result(nil)
                 break
             default:
                 result(FlutterMethodNotImplemented)
@@ -115,27 +133,35 @@ public class SwiftPushNotificationPlugin: NSObject, FlutterPlugin, UIApplication
     
     // UNUserNotificationCenterDelegate
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        NSLog("userNotificationCenter didReceive withCompletionHandler")
      
         let categoryIdentifier = response.notification.request.content.categoryIdentifier
         let userInfo = response.notification.request.content.userInfo
         let actionIdentifier = response.actionIdentifier
         
         let notificationData: [String: Any] = [
+            "title": response.notification.request.content.title,
+            "body": response.notification.request.content.body,
+            "data": response.notification.request.content.userInfo,
             "categoryIdentifier": categoryIdentifier,
-            "userInfo": userInfo,
             "actionIdentifier": actionIdentifier
         ]
-        /*
-        self.flutterResult!([
-            "data": notificationData,
-            "success": true
-            ])
-        */
         
+        let data: [String: Any] = [
+            "data": notificationData,
+            "message": response.notification.request.content.body,
+            "status": "success"
+            ]
+        
+        self.flutterChannel!.invokeMethod(SwiftPushNotificationPlugin.METHOD_PUSH_APP_OPEN, arguments: data)
+
         completionHandler()
     }
     
     public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        NSLog("userNotificationCenter willPresent withCompletionHandler")
         
         let notificationData: [String: Any] = [
             "title": notification.request.content.title,
@@ -153,6 +179,16 @@ public class SwiftPushNotificationPlugin: NSObject, FlutterPlugin, UIApplication
 
         completionHandler(UNNotificationPresentationOptions.sound)
                 
+    }
+    
+    public func clearNotifications(){
+        
+        let shared = UIApplication.shared
+        shared.applicationIconBadgeNumber = 0
+        //shared.cancelAllLocalNotifications()
+        
+        let center = UNUserNotificationCenter.current()
+        center.removeAllPendingNotificationRequests()
     }
 
 }

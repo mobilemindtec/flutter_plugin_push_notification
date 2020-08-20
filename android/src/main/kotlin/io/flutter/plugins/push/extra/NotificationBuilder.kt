@@ -5,16 +5,18 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
-import androidx.core.app.NotificationCompat
+import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
-
+import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.RemoteMessage
-
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.util.Random
+import java.util.*
+
 
 /**
  * Notification Builder is responsible for creating notifications from the application.
@@ -23,9 +25,9 @@ import java.util.Random
 object NotificationBuilder {
     private val TAG = "NotificationBuilder"
 
-
     fun createNotification(context: Context?, remoteMessage: RemoteMessage) {
         var notId = 0
+
 
         try {
             notId = Integer.parseInt(remoteMessage.getMessageId())
@@ -53,27 +55,41 @@ object NotificationBuilder {
             val mNotificationManager = context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val appName = getAppName(context!!)
 
-            val notificationIntent = Intent(context, PushHandlerActivity::class.java)
-            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            notificationIntent.putExtra("pushBundle", remoteMessage)
-
-            val contentIntent = PendingIntent.getActivity(context, notId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-
             var defaults = Notification.DEFAULT_ALL
-            val data = remoteMessage.getData()
+            val data = remoteMessage.data
             val notification = remoteMessage.notification!!
 
+            val notificationIntent = Intent(context, PushHandlerActivity::class.java)
+            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+            var actionNameId = context.resources.getIdentifier("flutter_note_receiver_action_name", "strings", context.packageName)
+
+            Log.d(TAG, "actionNameId = $actionNameId")
+
+            if(actionNameId > -1) {
+                notificationIntent.action = context.resources.getString(actionNameId)
+            }else{
+                notificationIntent.action = "FLUTTER_NOTE_ACTION_RECEIVER"
+            }
+
+            notificationIntent.putExtra("APP_NAME", appName)
+            notificationIntent.putExtra("NOTE_TITLE", notification.title)
+            notificationIntent.putExtra("NOTE_MESSAGE", notification.body)
+
+            var bundle = Bundle()
+            for(key in data.keys)
+                bundle.putString(key, data[key])
+
+            notificationIntent.putExtra("NOTE_DATA", bundle)
+
+            val contentIntent = PendingIntent.getActivity(context, notId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT)
 
             if (data.containsKey("defaults") && data.get("defaults") != null) {
                 try {
                     defaults = Integer.parseInt(data.get("defaults"))
                 } catch (ignore: NumberFormatException) {
                 }
-
             }
-
-            Log.d(TAG, "notification title = " + notification.title)
-            Log.d(TAG, "notification body = " + notification.body)
 
             val mBuilder = NotificationCompat.Builder(context)
                     .setDefaults(defaults)
@@ -84,7 +100,6 @@ object NotificationBuilder {
                     .setContentIntent(contentIntent)
                     .setColor(getColor(remoteMessage, context))
                     .setAutoCancel(true)
-
 
             val message = notification.getBody()
             if (message != null) {
@@ -165,7 +180,7 @@ object NotificationBuilder {
         var icon = -1
 
         // first try an iconname possible passed in the server payload
-        val iconNameFromServer = remoteMessage.notification!!.getIcon()
+        val iconNameFromServer = remoteMessage.notification!!.icon
         if (iconNameFromServer != null) {
             icon = getIconValue(context.packageName, iconNameFromServer)
         }
@@ -217,4 +232,5 @@ object NotificationBuilder {
 
         return -1
     }
+
 }

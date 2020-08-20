@@ -54,8 +54,8 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.firebase:firebase-core:16.0.8'
-    implementation 'com.google.firebase:firebase-messaging:17.4.0'
+    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.google.firebase:firebase-messaging:19.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     provided fileTree(dir: "$flutterRoot/bin/cache/artifacts/engine/android-arm", include: ['*.jar'])
 }
