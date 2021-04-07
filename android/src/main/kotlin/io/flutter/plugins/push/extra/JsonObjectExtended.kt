@@ -36,7 +36,15 @@ class JsonObjectExtended : JSONObject() {
                 if (o is Collection<*>) {
                     return JSONArray(o as Collection<*>?)
                 } else if (o!!.javaClass.isArray) {
-                    return JSONArray(o)
+                    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                        JSONArray(o)
+                    } else {
+                        var ret = JSONArray();
+                        for(i in o as Array<*>){
+                            ret.put(i)
+                        }
+                        ret
+                    }
                 }
                 if (o is Map<*, *>) {
                     return JSONObject(o as Map<*, *>?)
@@ -52,7 +60,7 @@ class JsonObjectExtended : JSONObject() {
                         o is String) {
                     return o
                 }
-                if (o!!.javaClass.getPackage().getName().startsWith("java.")) {
+                if (o!!.javaClass.getPackage()!!.name.startsWith("java.")) {
                     return o!!.toString()
                 }
             } catch (ignored: Exception) {

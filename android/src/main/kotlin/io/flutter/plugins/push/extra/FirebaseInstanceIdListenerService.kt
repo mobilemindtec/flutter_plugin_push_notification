@@ -11,7 +11,7 @@ import com.google.firebase.messaging.RemoteMessage
 
 class FirebaseInstanceIdListenerService : FirebaseMessagingService() {
 
-    override fun onNewToken(token: String?) {
+    override fun onNewToken(token: String) {
         Log.e("NEW_TOKEN", token);
         PushPlugin.executeOnTokenRefreshCallback()
     }

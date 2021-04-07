@@ -30,7 +30,7 @@ object NotificationBuilder {
 
 
         try {
-            notId = Integer.parseInt(remoteMessage.getMessageId())
+            notId = Integer.parseInt(remoteMessage.messageId!!)
         } catch (e: NumberFormatException) {
             Log.e(TAG, "Number format exception - Error parsing Notification ID: " + e.message)
         } catch (e: Exception) {
@@ -86,7 +86,7 @@ object NotificationBuilder {
 
             if (data.containsKey("defaults") && data.get("defaults") != null) {
                 try {
-                    defaults = Integer.parseInt(data.get("defaults"))
+                    defaults = Integer.parseInt(data.get("defaults").toString())
                 } catch (ignore: NumberFormatException) {
                 }
             }

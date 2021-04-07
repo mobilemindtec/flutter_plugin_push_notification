@@ -19,7 +19,7 @@ class PushHandlerActivity : Activity() {
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
 
-    override fun onCreate(savedInstanceState: Bundle) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "Creating...")
 
         super.onCreate(savedInstanceState)
@@ -42,15 +42,17 @@ class PushHandlerActivity : Activity() {
      * and sends it through to the PushPlugin for processing.
      */
     private fun processPushBundle(isPushPluginActive: Boolean) {
-        val extras = getIntent().getExtras()
+        val extras = intent.extras
         Log.d(TAG, "Processing push extras: IsPushPluginActive = $isPushPluginActive")
 
         if (extras != null) {
             Log.d(TAG, "Has extras.")
             val originalExtras = extras!!.getBundle("pushBundle")
 
-            originalExtras.putBoolean("foreground", false)
-            originalExtras.putBoolean("coldstart", !isPushPluginActive)
+            if(originalExtras != null) {
+                originalExtras.putBoolean("foreground", false)
+                originalExtras.putBoolean("coldstart", !isPushPluginActive)
+            }
 
             //PushPlugin.executeOnMessageReceivedCallback(originalExtras);
         }
@@ -60,10 +62,10 @@ class PushHandlerActivity : Activity() {
      * Forces the main activity to re-launch if it's unloaded.
      */
     private fun forceMainActivityReload() {
-        val pm = getPackageManager()
-        val launchIntent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName())
-        Log.d(TAG, "starting activity for package: " + getApplicationContext().getPackageName())
-        launchIntent.setPackage(null)
+        val pm = packageManager
+        val launchIntent = pm.getLaunchIntentForPackage(applicationContext.packageName)
+        Log.d(TAG, "starting activity for package: " + applicationContext.packageName)
+        launchIntent!!.setPackage(null)
         startActivity(launchIntent)
     }
 

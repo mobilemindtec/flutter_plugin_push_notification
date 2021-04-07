@@ -14,9 +14,9 @@ class NotificationReceiver : BroadcastReceiver() {
         Log.d(TAG, "###### NotificationReceiver")
         Log.d(TAG, "##########################")
         val pm = context.packageManager
-        val launchIntent = pm.getLaunchIntentForPackage(context.packageName)
+        val launchIntent = pm.getLaunchIntentForPackage(context.packageName)!!
 
-        val extras = intent.extras
+        val extras = intent.extras!!
 
         Log.d(TAG, "### extras.containsKey(\"APP_NAME\"): " + extras.containsKey("APP_NAME"))
 

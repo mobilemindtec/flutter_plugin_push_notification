@@ -116,7 +116,7 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
 
             //Log.i("FLUTTER_NOTE", "********* extras = ${this.activity.intent.extras}")
 
-            val extras = this.activity.intent.extras
+            val extras = this.activity.intent.extras!!
 
             //Log.i("FLUTTER_NOTE", "********* extras appName = ${extras.containsKey("APP_NAME")}")
 
@@ -128,7 +128,7 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
                 var bundleData = mutableMapOf<String, String>()
 
                 for (key in bundle.keySet()) {
-                    bundleData[key] = bundle.getString(key)
+                    bundleData[key] = bundle.getString(key)!!
                 }
 
                 data["data"] = bundleData
