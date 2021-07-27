@@ -17,7 +17,8 @@ class PushException implements Exception {
 
 enum PushResultStatus {
   Error,
-  Success
+  Success,
+  None
 }
 
 class PushResult {
@@ -27,7 +28,7 @@ class PushResult {
   String title;
   Map data;
 
-  PushResult({this.status, this.message, this.data, this.title = ""});
+  PushResult({this.status = PushResultStatus.None, this.message = "", this.data = const {}, this.title = ""});
 }
 
 typedef Future<dynamic> MessageHandler(PushResult result);
@@ -38,14 +39,14 @@ class PushNotification {
   static const MethodChannel _channel =
       const MethodChannel('plugins.flutter.io/push_notification_plugin');
 
-  final MessageHandler onMessageReceived;
-  final MessageHandler onTokenRefresh;
-  final MessageHandler onRegister;
-  final MessageHandler onUnregister;
-  final MessageHandler onPushAppOpen;
+  final MessageHandler? onMessageReceived;
+  final MessageHandler? onTokenRefresh;
+  final MessageHandler? onRegister;
+  final MessageHandler? onUnregister;
+  final MessageHandler? onPushAppOpen;
 
-  bool resgiterMessageReceivedListener;
-  bool resgiterTokenRefreshListener;
+  bool resgiterMessageReceivedListener = false;
+  bool resgiterTokenRefreshListener = false;
 
   PushNotification({
     this.onMessageReceived,
@@ -141,35 +142,35 @@ class PushNotification {
           if(onMessageReceived != null){
             var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
             var result = new PushResult(status: status, message: call.arguments["message"], title: call.arguments["title"], data: call.arguments["data"]);
-            onMessageReceived(result);
+            onMessageReceived!(result);
           }
         break;
       case "onTokenRefresh":
         if(onTokenRefresh != null){
           var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
           var result = new PushResult(status: status, message: call.arguments["message"], data: call.arguments["data"]);
-          onTokenRefresh(result);
+          onTokenRefresh!(result);
         }
         break;
       case "register":
         if(onRegister != null){
           var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
           var result = new PushResult(status: status, message: call.arguments["message"], data: call.arguments["data"]);
-          onRegister(result);
+          onRegister!(result);
         }
         break;
       case "unregister":
         if(onUnregister != null){
           var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
           var result = new PushResult(status: status, message: call.arguments["message"], data: call.arguments["data"]);
-          onUnregister(result);
+          onUnregister!(result);
         }
         break;
       case "onPushAppOpen":
         if(onPushAppOpen != null){
           var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
           var result = new PushResult(status: status, message: call.arguments["message"], data: call.arguments["data"]);
-          onPushAppOpen(result);
+          onPushAppOpen!(result);
         }
         break;
     }

@@ -13,36 +13,33 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  PushNotification push;
+  PushNotification? push;
 
-  Future _onMessageReceived(PushResult result){
-
-      print("_onMessageReceived");
-      print("-- ${result.message}");
-      print("-- ${result.data}");
-      print("-- ${result.status}");
-
+  Future<Null> _onMessageReceived(PushResult result) async {
+    print("_onMessageReceived");
+    print("-- ${result.message}");
+    print("-- ${result.data}");
+    print("-- ${result.status}");
   }
 
-  Future _onTokenRefresh(PushResult result){
+  Future<Null> _onTokenRefresh(PushResult result) async {
     print("_onTokenRefresh");
     print("-- ${result.message}");
     print("-- ${result.data}");
     print("-- ${result.status}");
-
   }
 
-  Future _onRegister(PushResult result){
+  Future<Null> _onRegister(PushResult result) async {
     print("_onRegister");
     print("-- ${result.message}");
     print("-- ${result.data}");
     print("-- ${result.status}");
 
-    push.registerMessageReceivedListener();
-    push.registerTokenRefreshListener();
+    push!.registerMessageReceivedListener();
+    push!.registerTokenRefreshListener();
   }
 
-  Future _onUnregister(PushResult result){
+  Future<Null> _onUnregister(PushResult result) async {
     print("_onUnregister");
     print("-- ${result.message}");
     print("-- ${result.data}");
@@ -56,7 +53,7 @@ class _MyAppState extends State<MyApp> {
 
     pusgRegister();
 
-    push.getPushData().then((data){
+    push!.getPushData().then((data){
       if(data != null){
         print("push data -----------------------");
         print(data);
@@ -77,7 +74,7 @@ class _MyAppState extends State<MyApp> {
         onRegister: _onRegister,
         onUnregister: _onUnregister
     );
-    this.push.register();
+    this.push!.register();
   }
 
 

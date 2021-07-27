@@ -31,9 +31,7 @@ class PushLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityDestroyed(activity: Activity) {}
 
-    override fun onActivitySaveInstanceState(activity: Activity,
-                                    outState: Bundle?) {
-    }
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
 
     override fun onActivityStarted(activity: Activity) {}
 
