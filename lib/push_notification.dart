@@ -100,9 +100,9 @@ class PushNotification {
       throw new PushException(e.message);
     }
   }
-  Future<Map<dynamic, dynamic>> getPushData() async {
+  Future<Map<dynamic, dynamic>?> getPushData() async {
     try{
-      final Map<dynamic, dynamic> result = await _channel.invokeMethod('getPushData');
+      final Map<dynamic, dynamic>? result = await _channel.invokeMethod('getPushData');
 
       return result;
 
@@ -141,38 +141,40 @@ class PushNotification {
       case "onMessageReceived":
           if(onMessageReceived != null){
             var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
-            var result = new PushResult(status: status, message: call.arguments["message"], title: call.arguments["title"], data: call.arguments["data"]);
+            var result = new PushResult(status: status, message: call.arguments["message"] ?? "", title: call.arguments["title"] ?? "", data: call.arguments["data"] ?? {});
             onMessageReceived!(result);
           }
         break;
       case "onTokenRefresh":
         if(onTokenRefresh != null){
           var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
-          var result = new PushResult(status: status, message: call.arguments["message"], data: call.arguments["data"]);
+          var result = new PushResult(status: status, message: call.arguments["message"] ?? "", data: call.arguments["data"] ?? {});
           onTokenRefresh!(result);
         }
         break;
       case "register":
         if(onRegister != null){
           var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
-          var result = new PushResult(status: status, message: call.arguments["message"], data: call.arguments["data"]);
+          var result = new PushResult(status: status, message: call.arguments["message"] ?? "", data: call.arguments["data"] ?? {});
           onRegister!(result);
         }
         break;
       case "unregister":
         if(onUnregister != null){
           var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
-          var result = new PushResult(status: status, message: call.arguments["message"], data: call.arguments["data"]);
+          var result = new PushResult(status: status, message: call.arguments["message"] ?? "", data: call.arguments["data"] ?? {});
           onUnregister!(result);
         }
         break;
       case "onPushAppOpen":
         if(onPushAppOpen != null){
           var status = call.arguments["status"] == "success" ? PushResultStatus.Success : PushResultStatus.Error;
-          var result = new PushResult(status: status, message: call.arguments["message"], data: call.arguments["data"]);
+          var result = new PushResult(status: status, message: call.arguments["message"] ?? "", data: call.arguments["data"] ?? {});
           onPushAppOpen!(result);
         }
         break;
+      default:
+        print("method not found ${call.method}");
     }
   }
 }
