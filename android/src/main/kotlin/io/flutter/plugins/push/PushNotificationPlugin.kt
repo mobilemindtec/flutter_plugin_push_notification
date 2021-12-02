@@ -3,10 +3,14 @@ package io.flutter.plugins.push
 import android.app.Activity
 import android.app.Application
 import android.util.Log
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import io.flutter.plugins.push.extra.PushLifecycleCallbacks
 import io.flutter.plugins.push.extra.PushPlugin
@@ -15,20 +19,20 @@ import io.flutter.plugins.push.extra.PushPluginListener
 /**
  * PushNotificationPlugin
  */
-class PushNotificationPlugin(private val registrar: Registrar, private val channel: MethodChannel) : MethodCallHandler {
+class PushNotificationPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
 
     companion object {
 
-        private val CHANNEL_NAME = "plugins.flutter.io/push_notification_plugin"
-        private val METHOD_REGISTER = "register"
-        private val METHOD_UNREGISTER = "unregister"
-        private val METHOD_MESSAGE_RECEIVED = "onMessageReceived"
-        private val METHOD_TOKEN_REFRESH = "onTokenRefresh"
-        private val METHOD_ARE_NOTIFICATION_ENABLED = "areNotificationsEnabled"
-        private val METHOD_APP_ICON_BADGE_NUMBER = "applicationIconBadgeNumber"
-        private val METHOD_CLEAN_APP_ICON_BADGE = "applicationCleanIconBadge"
-        private val METHOD_NOTIFICATION_CLICK = "notificationClick"
-        private val METHOD_GET_PUSH_DATA = "getPushData"
+        private const val CHANNEL_NAME = "plugins.flutter.io/push_notification_plugin"
+        private const val METHOD_REGISTER = "register"
+        private const val METHOD_UNREGISTER = "unregister"
+        private const val METHOD_MESSAGE_RECEIVED = "onMessageReceived"
+        private const val METHOD_TOKEN_REFRESH = "onTokenRefresh"
+        private const val METHOD_ARE_NOTIFICATION_ENABLED = "areNotificationsEnabled"
+        private const val METHOD_APP_ICON_BADGE_NUMBER = "applicationIconBadgeNumber"
+        private const val METHOD_CLEAN_APP_ICON_BADGE = "applicationCleanIconBadge"
+        private const val METHOD_NOTIFICATION_CLICK = "notificationClick"
+        private const val METHOD_GET_PUSH_DATA = "getPushData"
 
         /**
          * Plugin registration.
@@ -40,15 +44,24 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
         }
     }
 
-    private val activity: Activity = registrar.activity()
-    private val application: Application = registrar.context() as Application
 
-    private var methodResult: Result? = null
-
-    init {
-
+    private constructor(registrar: PluginRegistry.Registrar, channel: MethodChannel) {
+        this.channel = channel
+        this.application = registrar.context() as Application
+        this.activity = registrar.activity()
+        //this.application!!.registerActivityLifecycleCallbacks(activityHandler)
+        //registrar.addActivityResultListener(activityHandler)
         PushLifecycleCallbacks.registerCallbacks(this.application)
     }
+
+    constructor() {
+    }
+
+    private var activity: Activity? = null
+    private var application: Application? = null
+    private var channel: MethodChannel? = null
+    private var methodResult: Result? = null
+
 
     override fun onMethodCall(call: MethodCall, result: Result) {
 
@@ -81,11 +94,11 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
 
 
     fun register() {
-        PushPlugin.register(this.application, PushPluginListenerImpl(METHOD_REGISTER))
+        PushPlugin.register(this.application!!, PushPluginListenerImpl(METHOD_REGISTER))
     }
 
     fun unregister() {
-        PushPlugin.unregister(this.application, PushPluginListenerImpl(METHOD_UNREGISTER))
+        PushPlugin.unregister(this.application!!, PushPluginListenerImpl(METHOD_UNREGISTER))
     }
 
     fun onMessageReceived() {
@@ -112,11 +125,11 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
 
         //Log.i("FLUTTER_NOTE", "********* intent = ${this.activity.intent}")
 
-        if(this.activity.intent != null && this.activity.intent.extras != null) {
+        if(this.activity!!.intent != null && this.activity!!.intent.extras != null) {
 
             //Log.i("FLUTTER_NOTE", "********* extras = ${this.activity.intent.extras}")
 
-            val extras = this.activity.intent.extras!!
+            val extras = this.activity!!.intent.extras!!
 
             //Log.i("FLUTTER_NOTE", "********* extras appName = ${extras.containsKey("APP_NAME")}")
 
@@ -154,9 +167,7 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
 
     private inner class PushPluginListenerImpl internal constructor(private val methodName: String) : PushPluginListener {
 
-
         override fun success(message: String?, title: String?, data: Any?) {
-
             val map = mutableMapOf(
                     "status" to "success",
                     "message" to message,
@@ -164,42 +175,72 @@ class PushNotificationPlugin(private val registrar: Registrar, private val chann
                     "data" to data
             )
 
-            this@PushNotificationPlugin.activity.runOnUiThread(java.lang.Runnable {
-                channel.invokeMethod(methodName, map)
-            })
-
-
+            if(channel != null) {
+                this@PushNotificationPlugin.activity!!.runOnUiThread(java.lang.Runnable {
+                    channel!!.invokeMethod(methodName, map)
+                })
+            }
         }
 
         override fun success(message: String?) {
-
             val map = mutableMapOf(
                     "status" to "success",
                     "message" to message,
                     "data" to null
             )
-
-            this@PushNotificationPlugin.activity.runOnUiThread(java.lang.Runnable {
-                channel.invokeMethod(methodName, map)
-            })
-
+            if(channel != null) {
+                this@PushNotificationPlugin.activity!!.runOnUiThread(java.lang.Runnable {
+                    channel!!.invokeMethod(methodName, map)
+                })
+            }
         }
 
         override fun error(data: Any?) {
-
             val map = mutableMapOf(
                     "status" to "error",
                     "message" to data,
                     "data" to null
             )
-
-            this@PushNotificationPlugin.activity.runOnUiThread(java.lang.Runnable {
-                channel.invokeMethod(methodName, map)
-            })
-
+            if(channel != null) {
+                this@PushNotificationPlugin.activity!!.runOnUiThread(java.lang.Runnable {
+                    channel!!.invokeMethod(methodName, map)
+                })
+            }
         }
-
     }
 
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, CHANNEL_NAME)
+        channel!!.setMethodCallHandler(this)
+    }
+
+    override fun onDetachedFromEngine(p0: FlutterPlugin.FlutterPluginBinding) {
+        if(channel != null) {
+            channel!!.setMethodCallHandler(null)
+        }
+    }
+
+    override fun onAttachedToActivity(activityPluginBinding: ActivityPluginBinding) {
+        this.activity = activityPluginBinding.activity;
+        this.application = activityPluginBinding.activity.application;
+        //this.application!!.registerActivityLifecycleCallbacks(activityHandler)
+        //activityPluginBinding.addActivityResultListener(activityHandler)
+        PushLifecycleCallbacks.registerCallbacks(this.application)
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onReattachedToActivityForConfigChanges(p0: ActivityPluginBinding) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDetachedFromActivity() {
+        PushLifecycleCallbacks.unregisterCallbacks(this.application)
+        this.activity = null;
+        this.application = null;
+        //this.application!!.unregisterActivityLifecycleCallbacks(activityHandler)
+    }
 
 }

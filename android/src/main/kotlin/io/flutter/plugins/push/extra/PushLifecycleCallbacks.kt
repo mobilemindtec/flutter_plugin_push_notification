@@ -46,17 +46,14 @@ class PushLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
          * @param app
          */
         fun registerCallbacks(app: Application?) {
-            if (app == null) {
-                Log.d("PushLifecycleCallbacks", "The application is null, it's not passed correctly!")
-                throw RuntimeException("The application is null, it's not passed correctly!")
-            }
+            Log.d("PushLifecycleCallbacks", "Registering the activity lifecycle callbacks...")
+            app!!.registerActivityLifecycleCallbacks(callbacks)
+        }
 
+        fun unregisterCallbacks(app: Application?) {
             // clean up, not to leak and register it N times...
             Log.d("PushLifecycleCallbacks", "Unregistering the activity lifecycle callbacks...")
             app!!.unregisterActivityLifecycleCallbacks(callbacks)
-
-            Log.d("PushLifecycleCallbacks", "Registering the activity lifecycle callbacks...")
-            app!!.registerActivityLifecycleCallbacks(callbacks)
         }
     }
 }
