@@ -5,14 +5,16 @@
 
         <service
                 android:stopWithTask="false"
-                android:name="io.flutter.plugins.push.extra.PushPlugin">
+                android:name="io.flutter.plugins.push.extra.PushPlugin"
+                android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
         <service
-                android:name="io.flutter.plugins.push.extra.FirebaseInstanceIdListenerService">
+                android:name="io.flutter.plugins.push.extra.FirebaseInstanceIdListenerService"
+                android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>

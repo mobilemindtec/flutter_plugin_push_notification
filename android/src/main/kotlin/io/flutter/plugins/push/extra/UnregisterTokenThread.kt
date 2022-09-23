@@ -2,7 +2,7 @@ package io.flutter.plugins.push.extra
 
 import android.content.Context
 import android.util.Log
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import java.io.IOException
 
 /**
@@ -22,8 +22,11 @@ class UnregisterTokenThread(private val appContext: Context, private val callbac
 
     @Throws(IOException::class)
     private fun deleteTokenFrom() {
-        val instanceId = FirebaseInstanceId.getInstance()
-        instanceId.deleteInstanceId()
+
+        FirebaseMessaging.getInstance().deleteToken();
+
+        //val instanceId = FirebaseInstanceId.getInstance()
+        //instanceId.deleteInstanceId()
 
         Log.d(TAG, "Token deleted!")
 

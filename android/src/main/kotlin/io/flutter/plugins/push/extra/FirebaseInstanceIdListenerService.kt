@@ -1,9 +1,7 @@
 package io.flutter.plugins.push.extra
 
-import android.content.Context
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
 
 /**
  * Created by ricardo on 12/12/16.

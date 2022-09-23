@@ -2,9 +2,9 @@ package io.flutter.plugins.push.extra
 
 import android.content.Context
 import android.util.Log
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnSuccessListener
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.iid.InstanceIdResult
+import com.google.firebase.messaging.FirebaseMessaging
 import java.io.IOException
 
 
@@ -22,21 +22,28 @@ class ObtainTokenThread(private val appContext: Context, private val callbacks: 
         try {
 
 
-            FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener(OnSuccessListener<InstanceIdResult> { instanceIdResult ->
-                val newToken = instanceIdResult.token
+            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener {
+                task ->
 
-                Log.e(TAG, newToken)
+                if(!task.isSuccessful){
+                    Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                    return@OnCompleteListener
+                }
 
+                val newToken = task.result
                 this.token = newToken
 
                 if (callbacks != null) {
-                    Log.d(TAG, "Calling listener callback with token: " + token)
+                    Log.d(TAG, "Calling listener callback with token: $token")
                     callbacks!!.success(token)
                 } else {
-                    Log.d(TAG, "Token call returned, but no callback provided.")
+                    Log.d(TAG, "Token call returned: $token, but no callback provided.")
                 }
+
                 PushPlugin.isActive = true
             })
+
+
 
         } catch (e: IOException) {
             callbacks!!.error("Error while retrieving a token: " + e.message)
