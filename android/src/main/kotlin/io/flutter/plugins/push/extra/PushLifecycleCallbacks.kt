@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
+import com.google.firebase.FirebaseApp
 
 /**
  * Subscribe to the Pause and Resume activity events in order to toggle the PushPlugin's status.
@@ -27,7 +28,9 @@ class PushLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
         PushPlugin.isActive = true
     }
 
-    override fun onActivityCreated(activity: Activity, bundle: Bundle?) {}
+    override fun onActivityCreated(activity: Activity, bundle: Bundle?) {
+
+    }
 
     override fun onActivityDestroyed(activity: Activity) {}
 

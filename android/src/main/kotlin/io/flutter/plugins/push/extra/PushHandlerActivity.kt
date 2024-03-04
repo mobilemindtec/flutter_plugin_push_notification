@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import com.google.firebase.FirebaseApp
 
 /**
  * Activity which is an entry point, whenever a notification from the bar is tapped and executed.
@@ -23,6 +24,8 @@ class PushHandlerActivity : Activity() {
         Log.d(TAG, "Creating...")
 
         super.onCreate(savedInstanceState)
+
+
         Log.v(TAG, "onCreate")
 
         val isPushPluginActive = PushPlugin.isActive

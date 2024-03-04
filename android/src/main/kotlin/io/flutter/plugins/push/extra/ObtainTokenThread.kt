@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import java.io.IOException
 
@@ -20,7 +21,6 @@ class ObtainTokenThread(private val appContext: Context, private val callbacks: 
     @Override
     override fun run() {
         try {
-
 
             FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener {
                 task ->

@@ -1,37 +1,24 @@
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withInputStream { stream ->
-        localProperties.load(stream)
-    }
-}
-
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
-
 group 'io.flutter.plugins.push'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.4.0'
+    ext.kotlin_version = "1.9.0"
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
-        classpath 'com.google.gms:google-services:4.3.10'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        //classpath 'com.android.tools.build:gradle:8.2.1'
+        //classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        //classpath 'com.google.gms:google-services:4.4.1'
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -39,31 +26,46 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
+    if (project.android.hasProperty("namespace")) {
+        namespace 'io.flutter.plugins.push'
+    }
+
+    compileSdk 34
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
     }
+
     defaultConfig {
-        minSdkVersion 20
-        targetSdkVersion 30
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdkVersion 19
     }
-    lintOptions {
-        disable 'InvalidPackage'
+
+    dependencies {
+        testImplementation 'org.jetbrains.kotlin:kotlin-test'
+        testImplementation 'org.mockito:mockito-core:5.0.0'
+        implementation platform('com.google.firebase:firebase-bom:32.7.2')
+        implementation 'com.google.firebase:firebase-messaging'
+    }
+
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen {false}
+                showStandardStreams = true
+            }
+        }
     }
 }
-
-dependencies {
-    //implementation 'com.google.firebase:firebase-core:17.0.0'
-    //implementation 'com.google.firebase:firebase-messaging:19.0.0'
-    //implementation 'com.google.firebase:firebase-messaging:21.0.1'
-
-    implementation platform('com.google.firebase:firebase-bom:29.0.1')
-    implementation 'com.google.firebase:firebase-messaging'
-
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    compileOnly fileTree(dir: "$flutterRoot/bin/cache/artifacts/engine/android-arm", include: ['*.jar'])
-}
-
