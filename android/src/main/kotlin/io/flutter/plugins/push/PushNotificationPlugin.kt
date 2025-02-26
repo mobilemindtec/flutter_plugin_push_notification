@@ -11,7 +11,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import io.flutter.plugins.push.extra.PushLifecycleCallbacks
 import io.flutter.plugins.push.extra.PushPlugin
 import io.flutter.plugins.push.extra.PushPluginListener
@@ -33,29 +32,10 @@ class PushNotificationPlugin : MethodCallHandler, FlutterPlugin, ActivityAware {
         private const val METHOD_CLEAN_APP_ICON_BADGE = "applicationCleanIconBadge"
         private const val METHOD_NOTIFICATION_CLICK = "notificationClick"
         private const val METHOD_GET_PUSH_DATA = "getPushData"
-
-        /**
-         * Plugin registration.
-         */
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
-            channel.setMethodCallHandler(PushNotificationPlugin(registrar, channel))
-        }
     }
 
 
-    private constructor(registrar: PluginRegistry.Registrar, channel: MethodChannel) {
-        this.channel = channel
-        this.application = registrar.context() as Application
-        this.activity = registrar.activity()
-        //this.application!!.registerActivityLifecycleCallbacks(activityHandler)
-        //registrar.addActivityResultListener(activityHandler)
-        PushLifecycleCallbacks.registerCallbacks(this.application)
-    }
 
-    constructor() {
-    }
 
     private var activity: Activity? = null
     private var application: Application? = null

@@ -2,16 +2,15 @@ group 'io.flutter.plugins.push'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = "1.9.0"
+    ext.kotlin_version = '1.9.25'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        //classpath 'com.android.tools.build:gradle:8.2.1'
-        //classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        //classpath 'com.google.gms:google-services:4.4.1'
+        classpath 'com.android.tools.build:gradle:8.1.4'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -33,12 +32,12 @@ android {
     compileSdk 34
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     sourceSets {
@@ -52,9 +51,10 @@ android {
 
     dependencies {
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
-        testImplementation 'org.mockito:mockito-core:5.0.0'
-        implementation platform('com.google.firebase:firebase-bom:32.7.2')
+        implementation platform('com.google.firebase:firebase-bom:33.9.0')
         implementation 'com.google.firebase:firebase-messaging'
+
+        compileOnly files("${System.getenv("FLUTTER_HOME")}/bin/cache/artifacts/engine/android-arm64-release/flutter.jar")
     }
 
     testOptions {
